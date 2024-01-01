@@ -6,11 +6,15 @@
   "scripts": {
     "tree": "tree -I 'node_modules' > filetree.txt",
     "start": "electron-forge start",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "make:dmg": "electron-forge make --targets=@electron-forge/maker-dmg",
-    "make:zip": "electron-forge make --targets=@electron-forge/maker-zip"
+    "make:zip": "electron-forge make --targets=@electron-forge/maker-zip",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prettier:check": "prettier --check .",
+    "prettier:fix": "prettier --write ."
   },
   "keywords": [],
   "author": "Luke Arthur",
@@ -25,12 +29,17 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
     "@types/node": "^20.10.6",
     "electron": "^27.1.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.2",
+    "prettier": "^3.1.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
     "papaparse": "^5.4.1",
-    "pdfmake": "^0.2.9"
+    "pdfmake": "^0.2.9",
+    "vitest": "^1.1.1"
   }
 }
