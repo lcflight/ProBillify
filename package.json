@@ -4,6 +4,7 @@
   "description": "Make invoices with just a few clicks!",
   "main": "src/main.js",
   "scripts": {
+    "tree": "tree -I 'node_modules' > filetree.txt",
     "start": "electron-forge start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "package": "electron-forge package",
@@ -23,11 +24,13 @@
     "@electron-forge/maker-zip": "^7.2.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
     "@types/node": "^20.10.6",
-    "electron": "^28.1.0",
+    "electron": "^27.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "papaparse": "^5.4.1",
+    "pdfmake": "^0.2.9"
   }
 }
