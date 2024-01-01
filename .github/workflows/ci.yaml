@@ -16,9 +16,9 @@ jobs:
         run: |
           echo "${{ secrets.DOTENV }}" > .env
       - name: Install
-        run: pnpm install
+        run: npm install
       - name: Test
-        run: pnpm test -- --ci --coverage --watchAll=false
+        run: npm test -- --ci --coverage --watchAll=false
   Prettier:
     runs-on: ubuntu-latest
     steps:
