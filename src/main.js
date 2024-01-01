@@ -1,10 +1,10 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
-const path = require("node:path");
-const fs = require("fs");
-const Papa = require("papaparse");
-const { dialog } = require("electron");
-const pdfMake = require("pdfmake/build/pdfmake");
-const pdfFonts = require("pdfmake/build/vfs_fonts");
+const { app, BrowserWindow, ipcMain } = require('electron');
+const path = require('node:path');
+const fs = require('fs');
+const Papa = require('papaparse');
+const { dialog } = require('electron');
+const pdfMake = require('pdfmake/build/pdfmake');
+const pdfFonts = require('pdfmake/build/vfs_fonts');
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const createWindow = () => {
@@ -14,41 +14,41 @@ const createWindow = () => {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      preload: path.join(__dirname, "scripts", "preload.js"),
+      preload: path.join(__dirname, 'scripts', 'preload.js'),
     },
   });
 
-  mainWindow.loadFile("index.html");
+  mainWindow.loadFile('index.html');
 };
 
 app.whenReady().then(() => {
   createWindow();
 
-  app.on("activate", () => {
+  app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
 });
 
-ipcMain.on("fileDropped", (event, filePath) => {
-  console.log("fileDropped", filePath);
-  fs.readFile(filePath, "utf8", (err, data) => {
+ipcMain.on('fileDropped', (event, filePath) => {
+  console.log('fileDropped', filePath);
+  fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
       console.error(err);
       return;
     }
     let csvData = Papa.parse(data, { header: true });
-    event.sender.send("fileParsed", csvData.data);
+    event.sender.send('fileParsed', csvData.data);
   });
 });
 
-ipcMain.on("exportPdf", (event, csvData) => {
+ipcMain.on('exportPdf', (event, csvData) => {
   const docDefinition = {
     content: [
-      { text: "CSV Data", style: "header" },
+      { text: 'CSV Data', style: 'header' },
       JSON.stringify(csvData, null, 2),
     ],
   };
@@ -57,8 +57,8 @@ ipcMain.on("exportPdf", (event, csvData) => {
 
   dialog
     .showSaveDialog({
-      title: "Save PDF",
-      filters: [{ name: "PDFs", extensions: ["pdf"] }],
+      title: 'Save PDF',
+      filters: [{ name: 'PDFs', extensions: ['pdf'] }],
     })
     .then((result) => {
       if (!result.canceled) {
