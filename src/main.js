@@ -1,3 +1,9 @@
+const payee = require('./utils/payee.js');
+const invoiceDetails = require('./utils/invoiceDetails.js');
+const lineItems = require('./utils/lineItems');
+const reimbursements = require('./utils/reimbursements.js');
+const convertDuration = require('./utils/convertDuration.js');
+
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const fs = require('fs');
@@ -6,23 +12,6 @@ const { dialog } = require('electron');
 const pdfMake = require('pdfmake/build/pdfmake');
 const pdfFonts = require('pdfmake/build/vfs_fonts');
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
-const payee = {
-  name: 'Luke Arthur',
-  address: '123 Main St, Anytown, USA',
-  email: 'lcarthur747@gmail.dom',
-  phone: '123-456-7890',
-};
-
-const invoiceDetails = {
-  Attention: 'John Doe',
-  Date: '2021-01-01',
-  ProjectTitle: 'Project 1',
-  InvoiceNumber: '001',
-  Term: '31 days',
-  PaymentService: 'PayPal',
-  PaymentAddress: 'email@gmail.com',
-};
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -62,7 +51,7 @@ ipcMain.on('fileDropped', (event, filePath) => {
   });
 });
 
-ipcMain.on('exportPdf', (event, csvData) => {
+ipcMain.on('exportPdf', (event, lineItems) => {
   const docDefinition = {
     styles: {
       bodyText: {
@@ -144,10 +133,60 @@ ipcMain.on('exportPdf', (event, csvData) => {
                       },
                       { text: 'Cost', fillColor: '#367DA2', color: 'white' },
                     ],
-                    ['Project 1', 2, 100, 200],
-                    ['Project 2', 3, 150, 450],
-                    ['Project 3', 1, 200, 200],
-                    ['', '', 'Subtotal', 850],
+                    ...lineItems.map((item) => {
+                      console.log('Item:', item); // Log the entire item
+                      console.log('Project:', item.Project); // Log the Project property
+                      console.log('Duration:', item.Duration); // Log the Duration property
+                      console.log('Rate:', item['Amount (USD)']); // Log the Rate property
+
+                      if (
+                        item.Project &&
+                        item.Duration &&
+                        item['Amount (USD)']
+                      ) {
+                        // Parse the duration into hours
+                        const durationParts = item.Duration.split(':');
+                        const durationInHours =
+                          Number(durationParts[0]) +
+                          Number(durationParts[1]) / 60 +
+                          Number(durationParts[2]) / 3600;
+
+                        // Parse the rate to remove the currency symbol and convert to a number
+                        const rate = Number(
+                          item['Amount (USD)'].replace(/[^0-9.-]+/g, ''),
+                        );
+
+                        return [
+                          item.Project,
+                          {
+                            text: durationInHours.toFixed(2),
+                            alignment: 'right',
+                          },
+                          { text: rate.toFixed(2), alignment: 'right' },
+                          {
+                            text: (durationInHours * rate).toFixed(2),
+                            alignment: 'right',
+                          },
+                        ];
+                      } else {
+                        return [
+                          'N/A',
+                          { text: '0.00', alignment: 'right' },
+                          { text: '0.00', alignment: 'right' },
+                          { text: '0.00', alignment: 'right' },
+                        ]; // Return a default row if the necessary properties are not available
+                      }
+                    }),
+                    [
+                      '',
+                      '',
+                      'Subtotal',
+                      lineItems.reduce(
+                        (total, item) =>
+                          total + Number(item.duration) * Number(item.rate),
+                        0,
+                      ),
+                    ],
                     [
                       {
                         text: 'Reimbursements',
@@ -159,8 +198,26 @@ ipcMain.on('exportPdf', (event, csvData) => {
                       '',
                       '',
                     ],
-                    ['Reimbursement 1', 1, 50, 50],
-                    ['', '', 'Total', 900],
+                    ...reimbursements.map((item) => [
+                      item.title,
+                      '',
+                      '',
+                      item.cost,
+                    ]),
+                    [
+                      '',
+                      '',
+                      'Total',
+                      lineItems.reduce(
+                        (total, item) =>
+                          total + Number(item.duration) * Number(item.rate),
+                        0,
+                      ) +
+                        reimbursements.reduce(
+                          (total, item) => total + Number(item.cost),
+                          0,
+                        ),
+                    ],
                   ],
                   layout: {
                     hLineWidth: function (i, node) {
