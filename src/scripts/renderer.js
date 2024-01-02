@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const dropzone = document.getElementById('dropzone');
   const csvContentDiv = document.getElementById('csv-content');
   const exportButton = document.getElementById('export-button');
+  exportButton.style.display = 'none'; // Initially hide the button
   const unitPriceForm = document.getElementById('unit-price-form');
 
   dropzone.addEventListener('dragover', (e) => {
@@ -40,10 +41,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     leftHeader.style.display = 'block';
     rightHeader.textContent = 'Input Unit Prices';
     rightHeader.style.display = 'block';
-  });
 
-  ipcRenderer.on('fileParsed', (event, data) => {
-    csvContentDiv.innerText = JSON.stringify(data, null, 2);
+    exportButton.style.display = 'block'; // Show the button
   });
 
   let projectNames = [];
