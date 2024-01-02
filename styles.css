@@ -1,0 +1,95 @@
+body {
+  background-color: #202023;
+  font-family: monospace;
+  font-size: 15px;
+  color: white;
+  margin: 0px;
+}
+
+button {
+  margin-bottom: 10px;
+}
+
+input {
+  margin-bottom: 10px;
+}
+
+#unit-price-form div {
+  display: flex;
+}
+
+#unit-price-form input {
+  flex-shrink: 0; /* Prevent the input from shrinking */
+  margin-bottom: 10px;
+}
+
+#unit-price-form label {
+  margin-left: 1ch; /* Add a left margin to the label */
+  line-height: 1.8ch;
+}
+
+#dropzone {
+  width: 75px;
+  height: 75px;
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: grey;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  font-size: 15px;
+  margin: 20px;
+  margin-top: 0px;
+}
+
+/* #dropzone:hover {
+  background-color: lightgrey;
+} */
+
+#dropzone.dragover {
+  background-color: lightgrey;
+}
+
+#dropzone:active {
+  background-color: darkgrey;
+}
+
+#dropzone-hidden {
+  display: none;
+}
+
+#head-title {
+  font-family: monospace;
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+  width: 100%;
+  display: block;
+}
+
+#title-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#page-flex {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 40px, 40px;
+}
+
+#flex-right {
+  margin-right: 30px;
+}
+
+#csv-content {
+  margin-left: 30px;
+}
+
+#left-header {
+  margin-left: 30px;
+}

@@ -15,8 +15,8 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1000,
+    height: 800,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -41,6 +41,8 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
+let canChangeDropzoneId = true;
+
 ipcMain.on('fileDropped', (event, filePath) => {
   console.log('fileDropped', filePath);
   fs.readFile(filePath, 'utf8', (err, data) => {
@@ -49,10 +51,18 @@ ipcMain.on('fileDropped', (event, filePath) => {
       return;
     }
     let csvData = Papa.parse(data, { header: true });
-    event.sender.send('fileParsed', csvData.data);
 
-    // Get the unique project names
-    const projectNames = [...new Set(csvData.data.map((item) => item.Project))];
+    // Get the unique project names and check for undefined projects
+    const projectNames = [];
+    csvData.data.forEach((item) => {
+      if (item.Project === undefined) {
+        console.log('Undefined project:', item); // Log the undefined project
+      } else if (!projectNames.includes(item.Project)) {
+        projectNames.push(item.Project);
+      }
+    });
+
+    event.sender.send('fileParsed', csvData.data);
     event.sender.send('projectNames', projectNames);
 
     // Read the unit prices from the file
@@ -61,8 +71,21 @@ ipcMain.on('fileDropped', (event, filePath) => {
       unitPrices = JSON.parse(fs.readFileSync(unitPricesPath, 'utf8'));
     }
 
-    // Send the unit prices to the renderer process
+    // Send renderer process
     event.sender.send('unitPrices', unitPrices);
+
+    // Only emit the 'changeDropzoneId' event if the timeout has passed
+    if (canChangeDropzoneId) {
+      event.sender.send('changeDropzoneId');
+      canChangeDropzoneId = false; // Prevent the event from being emitted again immediately
+      console.log('changeDropzoneId emitted');
+
+      // After a delay, allow the event to be emitted again
+      setTimeout(() => {
+        canChangeDropzoneId = true;
+        console.log('canChangeDropzoneId set to true');
+      }, 3000); // 3000 milliseconds = 3 seconds
+    }
   });
 });
 
