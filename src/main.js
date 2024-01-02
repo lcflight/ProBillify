@@ -98,7 +98,7 @@ ipcMain.on('unitPrices', (event, prices) => {
   fs.writeFileSync(unitPricesPath, JSON.stringify(unitPrices));
 });
 
-ipcMain.on('exportPdf', (event, lineItems) => {
+ipcMain.on('exportPdf', (event, lineItems, unitPrices) => {
   // Group the items by the 'Project' property
   const groupedItems = lineItems.reduce((groups, item) => {
     if (item.Project && item.Duration && item['Amount (USD)']) {
@@ -227,6 +227,16 @@ ipcMain.on('exportPdf', (event, lineItems) => {
                       { text: 'Cost', fillColor: '#367DA2', color: 'white' },
                     ],
                     ...summedItems.map((item) => {
+                      // Check if unitPrices[item.Project] is defined
+                      const unitPrice = unitPrices[item.Project];
+                      if (unitPrice === undefined) {
+                        console.error(
+                          'Unit price is undefined for project:',
+                          item.Project,
+                        );
+                        return [item.Project, '', '', ''];
+                      }
+
                       return [
                         item.Project,
                         {
@@ -235,14 +245,12 @@ ipcMain.on('exportPdf', (event, lineItems) => {
                           style: 'tableText',
                         },
                         {
-                          text: unitPrices[item.Project].toFixed(2),
+                          text: unitPrice.toFixed(2),
                           alignment: 'right',
                           style: 'tableText',
                         },
                         {
-                          text: (
-                            item.Duration * unitPrices[item.Project]
-                          ).toFixed(2),
+                          text: (item.Duration * unitPrice).toFixed(2),
                           alignment: 'right',
                           style: 'tableText',
                         },

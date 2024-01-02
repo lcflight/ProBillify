@@ -45,6 +45,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     exportButton.style.display = 'block'; // Show the button
   });
 
+  ipcRenderer.on('fileParsed', (event, data) => {
+    csvContentDiv.innerText = JSON.stringify(data, null, 2);
+  });
+
   let projectNames = [];
 
   ipcRenderer.on('unitPrices', (event, unitPrices) => {
@@ -84,19 +88,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
       unitPriceForm.appendChild(div); // Add the div to the form
     });
 
-    const button = document.createElement('button');
-    button.textContent = 'Submit';
-    button.addEventListener('click', () => {
-      const unitPrices = projectNames.reduce((prices, projectName) => {
-        prices[projectName] = Number(
-          document.getElementById(projectName).value,
-        );
-        return prices;
-      }, {});
-      ipcRenderer.send('unitPrices', unitPrices);
-    });
-    unitPriceForm.appendChild(button);
-
     // Emit the 'getUnitPrices' event after the input fields are created
     ipcRenderer.send('getUnitPrices');
   });
@@ -104,7 +95,20 @@ document.addEventListener('DOMContentLoaded', (event) => {
   exportButton.addEventListener('click', () => {
     try {
       const csvData = JSON.parse(csvContentDiv.innerText);
-      ipcRenderer.send('exportPdf', csvData);
+
+      // Get unit prices from input fields
+      const unitPrices = projectNames.reduce((prices, projectName) => {
+        prices[projectName] = Number(
+          document.getElementById(projectName).value,
+        );
+        return prices;
+      }, {});
+
+      // Send unit prices to main process
+      ipcRenderer.send('unitPrices', unitPrices);
+
+      // Send data to be exported as PDF
+      ipcRenderer.send('exportPdf', csvData, unitPrices);
       console.log('exportButton clicked');
     } catch (error) {
       console.error('Failed to parse CSV data:', error);
