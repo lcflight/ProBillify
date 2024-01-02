@@ -7,8 +7,16 @@
 ├── pnpm-lock.yaml
 └── src
     ├── main.js
-    └── scripts
-        ├── preload.js
-        └── renderer.js
+    ├── scripts
+    │   ├── preload.js
+    │   └── renderer.js
+    ├── tests
+    │   └── main.spec.js
+    └── utils
+        ├── convertDuration.js
+        ├── invoiceDetails.js
+        ├── lineItems.js
+        ├── payee.js
+        └── reimbursements.js
 
-3 directories, 9 files
+5 directories, 15 files

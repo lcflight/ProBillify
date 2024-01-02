@@ -9,21 +9,28 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
     />
-    <title>Hello World!</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <title id="head-title">ProBillify</title>
   </head>
   <body>
-    <h1>Hello World!</h1>
-
-    <div
-      id="dropzone"
-      style="width: 200px; height: 200px; border: 1px solid red"
-    >
-      Drop CSV here
+    <div id="title-bar">
+      <h1>PROBILLIFY</h1>
     </div>
-    <button id="export-button">Export to PDF</button>
-    <div id="csv-content"></div>
+
+    <div id="page-flex">
+      <div id="flex-left">
+        <div id="dropzone">Drop CSV here</div>
+        <div id="csv-content"></div>
+      </div>
+      <div id="flex-right">
+        <div id="unit-price-form"></div>
+        <button id="export-button">Export to PDF</button>
+        <div id="undefinedProjestsDiv"></div>
+      </div>
+    </div>
 
     <!-- You can also require other files to run in this process -->
     <script src="./src/scripts/renderer.js"></script>
+    <script src="./src/scripts/reactiveDisplay.js"></script>
   </body>
 </html>
