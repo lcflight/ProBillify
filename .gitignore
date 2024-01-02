@@ -13,3 +13,6 @@ yarn.lock
 
 # macOS system files
 .DS_Store
+
+# Local Storage
+unitPrices.json

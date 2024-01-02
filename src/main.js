@@ -27,6 +27,8 @@ const createWindow = () => {
   mainWindow.loadFile('index.html');
 };
 
+const unitPricesPath = path.join(__dirname, 'unitPrices.json');
+
 app.whenReady().then(() => {
   createWindow();
 
@@ -48,7 +50,29 @@ ipcMain.on('fileDropped', (event, filePath) => {
     }
     let csvData = Papa.parse(data, { header: true });
     event.sender.send('fileParsed', csvData.data);
+
+    // Get the unique project names
+    const projectNames = [...new Set(csvData.data.map((item) => item.Project))];
+    event.sender.send('projectNames', projectNames);
+
+    // Read the unit prices from the file
+    let unitPrices = {};
+    if (fs.existsSync(unitPricesPath)) {
+      unitPrices = JSON.parse(fs.readFileSync(unitPricesPath, 'utf8'));
+    }
+
+    // Send the unit prices to the renderer process
+    event.sender.send('unitPrices', unitPrices);
   });
+});
+
+let unitPrices = {};
+
+ipcMain.on('unitPrices', (event, prices) => {
+  // Store the unit prices
+  unitPrices = prices;
+  // Write the unit prices to a file
+  fs.writeFileSync(unitPricesPath, JSON.stringify(unitPrices));
 });
 
 ipcMain.on('exportPdf', (event, lineItems) => {
@@ -188,14 +212,14 @@ ipcMain.on('exportPdf', (event, lineItems) => {
                           style: 'tableText',
                         },
                         {
-                          text: item['Amount (USD)'].toFixed(2),
+                          text: unitPrices[item.Project].toFixed(2),
                           alignment: 'right',
                           style: 'tableText',
                         },
                         {
-                          text: (item.Duration * item['Amount (USD)']).toFixed(
-                            2,
-                          ),
+                          text: (
+                            item.Duration * unitPrices[item.Project]
+                          ).toFixed(2),
                           alignment: 'right',
                           style: 'tableText',
                         },
@@ -209,7 +233,8 @@ ipcMain.on('exportPdf', (event, lineItems) => {
                         .reduce(
                           (total, item) =>
                             total +
-                            (item.Duration || 0) * (item['Amount (USD)'] || 0),
+                            (item.Duration || 0) *
+                              (unitPrices[item.Project] || 0),
                           0,
                         )
                         .toFixed(2),
@@ -235,9 +260,11 @@ ipcMain.on('exportPdf', (event, lineItems) => {
                       '',
                       '',
                       'Total',
-                      lineItems.reduce(
+                      summedItems.reduce(
                         (total, item) =>
-                          total + Number(item.duration) * Number(item.rate),
+                          total +
+                          (item.Duration || 0) *
+                            (unitPrices[item.Project] || 0),
                         0,
                       ) +
                         reimbursements.reduce(
