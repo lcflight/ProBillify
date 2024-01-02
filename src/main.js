@@ -52,13 +52,56 @@ ipcMain.on('fileDropped', (event, filePath) => {
 });
 
 ipcMain.on('exportPdf', (event, lineItems) => {
+  // Group the items by the 'Project' property
+  const groupedItems = lineItems.reduce((groups, item) => {
+    if (item.Project && item.Duration && item['Amount (USD)']) {
+      const key = item.Project;
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+      groups[key].push(item);
+    }
+    return groups;
+  }, {});
+
+  // Sum the 'Duration' and 'Amount (USD)' for each group
+  const summedItems = Object.values(groupedItems).map((group) => {
+    return group.reduce((sum, item) => {
+      // Parse the duration into hours
+      const durationParts = item.Duration
+        ? item.Duration.split(':')
+        : ['0', '0', '0'];
+      const durationInHours =
+        Number(durationParts[0]) +
+        Number(durationParts[1]) / 60 +
+        Number(durationParts[2]) / 3600;
+
+      // Parse the rate to remove the currency symbol and convert to a number
+      const rate = item['Amount (USD)']
+        ? Number(item['Amount (USD)'].replace(/[^0-9.-]+/g, ''))
+        : 0;
+
+      return {
+        Project: item.Project,
+        Duration: (sum.Duration || 0) + durationInHours,
+        'Amount (USD)': (sum['Amount (USD)'] || 0) + rate,
+      };
+    }, {});
+  });
+
   const docDefinition = {
+    defaultStyle: {
+      fontSize: 11,
+    },
     styles: {
       bodyText: {
         fontSize: 10,
         lineHeight: 1.2,
         alignment: 'left',
         color: '#000000',
+      },
+      tableText: {
+        fontSize: 11,
       },
     },
     content: [
@@ -120,72 +163,56 @@ ipcMain.on('exportPdf', (event, lineItems) => {
                         text: 'Description',
                         fillColor: '#367DA2',
                         color: 'white',
+                        style: 'tableText',
                       },
                       {
                         text: 'Quantity',
                         fillColor: '#367DA2',
                         color: 'white',
+                        style: 'tableText',
                       },
                       {
                         text: 'Unit Price',
                         fillColor: '#367DA2',
                         color: 'white',
+                        style: 'tableText',
                       },
                       { text: 'Cost', fillColor: '#367DA2', color: 'white' },
                     ],
-                    ...lineItems.map((item) => {
-                      console.log('Item:', item); // Log the entire item
-                      console.log('Project:', item.Project); // Log the Project property
-                      console.log('Duration:', item.Duration); // Log the Duration property
-                      console.log('Rate:', item['Amount (USD)']); // Log the Rate property
-
-                      if (
-                        item.Project &&
-                        item.Duration &&
-                        item['Amount (USD)']
-                      ) {
-                        // Parse the duration into hours
-                        const durationParts = item.Duration.split(':');
-                        const durationInHours =
-                          Number(durationParts[0]) +
-                          Number(durationParts[1]) / 60 +
-                          Number(durationParts[2]) / 3600;
-
-                        // Parse the rate to remove the currency symbol and convert to a number
-                        const rate = Number(
-                          item['Amount (USD)'].replace(/[^0-9.-]+/g, ''),
-                        );
-
-                        return [
-                          item.Project,
-                          {
-                            text: durationInHours.toFixed(2),
-                            alignment: 'right',
-                          },
-                          { text: rate.toFixed(2), alignment: 'right' },
-                          {
-                            text: (durationInHours * rate).toFixed(2),
-                            alignment: 'right',
-                          },
-                        ];
-                      } else {
-                        return [
-                          'N/A',
-                          { text: '0.00', alignment: 'right' },
-                          { text: '0.00', alignment: 'right' },
-                          { text: '0.00', alignment: 'right' },
-                        ]; // Return a default row if the necessary properties are not available
-                      }
+                    ...summedItems.map((item) => {
+                      return [
+                        item.Project,
+                        {
+                          text: item.Duration.toFixed(2),
+                          alignment: 'right',
+                          style: 'tableText',
+                        },
+                        {
+                          text: item['Amount (USD)'].toFixed(2),
+                          alignment: 'right',
+                          style: 'tableText',
+                        },
+                        {
+                          text: (item.Duration * item['Amount (USD)']).toFixed(
+                            2,
+                          ),
+                          alignment: 'right',
+                          style: 'tableText',
+                        },
+                      ];
                     }),
                     [
                       '',
                       '',
                       'Subtotal',
-                      lineItems.reduce(
-                        (total, item) =>
-                          total + Number(item.duration) * Number(item.rate),
-                        0,
-                      ),
+                      summedItems
+                        .reduce(
+                          (total, item) =>
+                            total +
+                            (item.Duration || 0) * (item['Amount (USD)'] || 0),
+                          0,
+                        )
+                        .toFixed(2),
                     ],
                     [
                       {
@@ -225,6 +252,9 @@ ipcMain.on('exportPdf', (event, lineItems) => {
                     },
                     vLineWidth: function (i, node) {
                       return 0.5; // Make vertical lines thinner
+                    },
+                    fontSize: function (row, node) {
+                      return 11;
                     },
                   },
                 },
