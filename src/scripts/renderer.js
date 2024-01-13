@@ -29,6 +29,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     e.stopPropagation();
   });
 
+  // Get the "add-reimbursement" button
+  const addReimbursement = document.getElementById('add-reimbursement');
+
   dropzone.addEventListener('drop', (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -43,6 +46,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     rightHeader.style.display = 'block';
 
     exportButton.style.display = 'block'; // Show the button
+    addReimbursement.style.display = 'block'; // Show the button
   });
 
   ipcRenderer.on('fileParsed', (event, data) => {
@@ -124,5 +128,49 @@ document.addEventListener('DOMContentLoaded', (event) => {
         dropzone.id = 'dropzone';
       }
     }
+  });
+
+  // Get the form where you want to add the input fields
+  const form = document.getElementById('reimbursement-form'); // Replace 'form-id' with the id of your form
+
+  // Add event listener to the button
+  addReimbursement.addEventListener('click', () => {
+    // Get all input-pair divs
+    const inputPairs = Array.from(form.querySelectorAll('.input-pair'));
+
+    // Check if the last pair is filled out
+    if (inputPairs.length > 0) {
+      const lastPair = inputPairs[inputPairs.length - 1];
+      const lastTitleInput = lastPair.querySelector('input[name="title"]');
+      const lastValueInput = lastPair.querySelector('input[name="value"]');
+
+      if (lastTitleInput.value === '' || lastValueInput.value === '') {
+        // If the last pair is not filled out, return and do not create new inputs
+        return;
+      }
+    }
+
+    // Create a div
+    const div = document.createElement('div');
+    div.className = 'input-pair'; // Add a class to the div
+
+    // Create title input
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.name = 'title';
+    titleInput.placeholder = 'Title';
+
+    // Create value input
+    const valueInput = document.createElement('input');
+    valueInput.type = 'number';
+    valueInput.name = 'value';
+    valueInput.placeholder = 'Value';
+
+    // Append inputs to the div
+    div.appendChild(titleInput);
+    div.appendChild(valueInput);
+
+    // Append div to the form
+    form.appendChild(div);
   });
 });
