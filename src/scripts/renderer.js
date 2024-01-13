@@ -105,11 +105,33 @@ document.addEventListener('DOMContentLoaded', (event) => {
         return prices;
       }, {});
 
+      // Get all input-pair divs
+      const inputPairs = Array.from(form.querySelectorAll('.input-pair'));
+
+      // Gather all the data from the input-pairs
+      let reimbursements = inputPairs.map((pair) => {
+        const titleInput = pair.querySelector('input[name="title"]');
+        const valueInput = pair.querySelector('input[name="value"]');
+
+        return {
+          title: titleInput.value,
+          cost: valueInput.value,
+        };
+      });
+
+      // Filter out any pairs where either the title or cost is empty
+      reimbursements = reimbursements.filter(
+        (item) => item.title !== '' && item.cost !== '',
+      );
+
       // Send unit prices to main process
       ipcRenderer.send('unitPrices', unitPrices);
 
+      // Send reimbursements to main process
+      ipcRenderer.send('reimbursements', reimbursements);
+
       // Send data to be exported as PDF
-      ipcRenderer.send('exportPdf', csvData, unitPrices);
+      ipcRenderer.send('exportPdf', csvData, unitPrices, reimbursements);
       console.log('exportButton clicked');
     } catch (error) {
       console.error('Failed to parse CSV data:', error);

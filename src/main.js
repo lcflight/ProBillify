@@ -1,7 +1,7 @@
 const payee = require('./utils/payee.js');
 const invoiceDetails = require('./utils/invoiceDetails.js');
 const lineItems = require('./utils/lineItems');
-const reimbursements = require('./utils/reimbursements.js');
+// const reimbursements = require('./utils/reimbursements.js');
 const convertDuration = require('./utils/convertDuration.js');
 
 const { app, BrowserWindow, ipcMain } = require('electron');
@@ -103,7 +103,7 @@ ipcMain.on('unitPrices', (event, prices) => {
   fs.writeFileSync(unitPricesPath, JSON.stringify(unitPrices));
 });
 
-ipcMain.on('exportPdf', (event, lineItems, unitPrices) => {
+ipcMain.on('exportPdf', (event, lineItems, unitPrices, reimbursements) => {
   // Group the items by the 'Project' property
   const groupedItems = lineItems.reduce((groups, item) => {
     if (item.Project && item.Duration) {
@@ -286,23 +286,31 @@ ipcMain.on('exportPdf', (event, lineItems, unitPrices) => {
                       item.title,
                       '',
                       '',
-                      item.cost,
+                      {
+                        text: Number(item.cost).toFixed(2),
+                        alignment: 'right',
+                      },
                     ]),
                     [
                       '',
                       '',
                       'Total',
-                      summedItems.reduce(
-                        (total, item) =>
-                          total +
-                          (item.Duration || 0) *
-                            (unitPrices[item.Project] || 0),
-                        0,
-                      ) +
-                        reimbursements.reduce(
-                          (total, item) => total + Number(item.cost),
-                          0,
-                        ),
+                      {
+                        text: (
+                          summedItems.reduce(
+                            (total, item) =>
+                              total +
+                              (item.Duration || 0) *
+                                (unitPrices[item.Project] || 0),
+                            0,
+                          ) +
+                          reimbursements.reduce(
+                            (total, item) => total + Number(item.cost),
+                            0,
+                          )
+                        ).toFixed(2),
+                        alignment: 'right',
+                      },
                     ],
                   ],
                   layout: {
