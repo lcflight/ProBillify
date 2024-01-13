@@ -52,6 +52,11 @@ ipcMain.on('fileDropped', (event, filePath) => {
     }
     let csvData = Papa.parse(data, { header: true });
 
+    // Remove any objects without a 'Project' property or with an empty 'Project' property
+    csvData.data = csvData.data.filter(
+      (item) => item.Project && item.Project.trim() !== '',
+    );
+
     // Get the unique project names and check for undefined projects
     const projectNames = [];
     csvData.data.forEach((item) => {
@@ -101,7 +106,7 @@ ipcMain.on('unitPrices', (event, prices) => {
 ipcMain.on('exportPdf', (event, lineItems, unitPrices) => {
   // Group the items by the 'Project' property
   const groupedItems = lineItems.reduce((groups, item) => {
-    if (item.Project && item.Duration && item['Amount (USD)']) {
+    if (item.Project && item.Duration) {
       const key = item.Project;
       if (!groups[key]) {
         groups[key] = [];
@@ -111,27 +116,20 @@ ipcMain.on('exportPdf', (event, lineItems, unitPrices) => {
     return groups;
   }, {});
 
-  // Sum the 'Duration' and 'Amount (USD)' for each group
+  // Sum the 'Duration' for each group and calculate 'Amount (USD)' based on the 'Duration' and unit price
   const summedItems = Object.values(groupedItems).map((group) => {
     return group.reduce((sum, item) => {
       // Parse the duration into hours
-      const durationParts = item.Duration
-        ? item.Duration.split(':')
-        : ['0', '0', '0'];
-      const durationInHours =
-        Number(durationParts[0]) +
-        Number(durationParts[1]) / 60 +
-        Number(durationParts[2]) / 3600;
+      const durationInHours = convertDuration(item.Duration);
 
-      // Parse the rate to remove the currency symbol and convert to a number
-      const rate = item['Amount (USD)']
-        ? Number(item['Amount (USD)'].replace(/[^0-9.-]+/g, ''))
-        : 0;
+      // Calculate the amount based on the duration and unit price
+      const unitPrice = unitPrices[item.Project] || 0;
+      const amount = durationInHours * unitPrice;
 
       return {
         Project: item.Project,
         Duration: (sum.Duration || 0) + durationInHours,
-        'Amount (USD)': (sum['Amount (USD)'] || 0) + rate,
+        'Amount (USD)': (sum['Amount (USD)'] || 0) + amount,
       };
     }, {});
   });
@@ -260,15 +258,18 @@ ipcMain.on('exportPdf', (event, lineItems, unitPrices) => {
                       '',
                       '',
                       'Subtotal',
-                      summedItems
-                        .reduce(
-                          (total, item) =>
-                            total +
-                            (item.Duration || 0) *
-                              (unitPrices[item.Project] || 0),
-                          0,
-                        )
-                        .toFixed(2),
+                      {
+                        text: summedItems
+                          .reduce(
+                            (total, item) =>
+                              total +
+                              (item.Duration || 0) *
+                                (unitPrices[item.Project] || 0),
+                            0,
+                          )
+                          .toFixed(2),
+                        alignment: 'right',
+                      },
                     ],
                     [
                       {

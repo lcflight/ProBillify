@@ -55,40 +55,37 @@ document.addEventListener('DOMContentLoaded', (event) => {
     projectNames.forEach((projectName) => {
       const input = document.getElementById(projectName);
       if (input && unitPrices[projectName]) {
-        // Set the value of the input field to the unit price
         input.value = unitPrices[projectName];
       }
     });
   });
 
   ipcRenderer.on('projectNames', (event, names) => {
-    projectNames = names; // Update projectNames when a 'projectNames' event is received
+    projectNames = names;
 
-    // Clear the unitPriceForm div
     while (unitPriceForm.firstChild) {
       unitPriceForm.removeChild(unitPriceForm.firstChild);
     }
 
     projectNames.forEach((projectName) => {
-      const div = document.createElement('div'); // Create a new div
+      const div = document.createElement('div');
 
       const input = document.createElement('input');
       input.type = 'number';
       input.id = projectName;
-      div.appendChild(input); // Add the input to the div
+      div.appendChild(input);
 
       const colon = document.createElement('span');
       colon.textContent = ': ';
-      div.appendChild(colon); // Add the colon to the div
+      div.appendChild(colon);
 
       const label = document.createElement('label');
       label.textContent = `${projectName} unit price`;
-      div.appendChild(label); // Add the label to the div
+      div.appendChild(label);
 
-      unitPriceForm.appendChild(div); // Add the div to the form
+      unitPriceForm.appendChild(div);
     });
 
-    // Emit the 'getUnitPrices' event after the input fields are created
     ipcRenderer.send('getUnitPrices');
   });
 
