@@ -1,6 +1,6 @@
 const { ipcRenderer } = require('electron');
 
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', () => {
   // Create header elements
   const leftHeader = document.createElement('h2');
   leftHeader.id = 'left-header';
@@ -49,8 +49,18 @@ document.addEventListener('DOMContentLoaded', (event) => {
     addReimbursement.style.display = 'block'; // Show the button
   });
 
+  const payeeForm = document.getElementById('payee-form');
+  const payeeNameInput = document.getElementById('payee-name');
+
   ipcRenderer.on('fileParsed', (event, data) => {
     csvContentDiv.innerText = JSON.stringify(data, null, 2);
+    // payeeForm.style.display = 'block';
+  });
+
+  payeeForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const payeeName = payeeNameInput.value;
+    ipcRenderer.send('payeeName', payeeName);
   });
 
   let projectNames = [];

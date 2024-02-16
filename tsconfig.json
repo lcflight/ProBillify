@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES2018",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/utils/invoiceDetails.js",
+    "src/utils/convertDuration.js",
+    "src/utils/payee.js"
+  ],
+  "exclude": ["node_modules"]
+}

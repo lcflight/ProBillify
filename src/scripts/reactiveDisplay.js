@@ -1,4 +1,5 @@
 const dropzone = document.getElementById('dropzone');
+const { ipcRenderer } = require('electron');
 
 dropzone.addEventListener('dragenter', (e) => {
   e.preventDefault();

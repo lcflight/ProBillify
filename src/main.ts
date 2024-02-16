@@ -1,8 +1,7 @@
-const payee = require('./utils/payee.js');
-const invoiceDetails = require('./utils/invoiceDetails.js');
-const lineItems = require('./utils/lineItems');
+const payee = require('../src/utils/payee.ts');
+const invoiceDetails = require('../src/utils/invoiceDetails.ts');
 // const reimbursements = require('./utils/reimbursements.js');
-const convertDuration = require('./utils/convertDuration.js');
+const convertDuration = require('../src/utils/convertDuration.ts');
 
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
@@ -173,7 +172,7 @@ ipcMain.on('exportPdf', (event, lineItems, unitPrices, reimbursements) => {
           {
             width: '30%',
             text: [
-              `${payee.name}\n`,
+              `${payee.name}\n`, //TODO: Change to payeeName
               `${payee.phone}\n`,
               `${payee.email}\n\n`,
               `${payee.address}\n`,
@@ -314,13 +313,13 @@ ipcMain.on('exportPdf', (event, lineItems, unitPrices, reimbursements) => {
                     ],
                   ],
                   layout: {
-                    hLineWidth: function (i, node) {
+                    hLineWidth: function () {
                       return 0.5; // Make horizontal lines thinner
                     },
-                    vLineWidth: function (i, node) {
+                    vLineWidth: function () {
                       return 0.5; // Make vertical lines thinner
                     },
-                    fontSize: function (row, node) {
+                    fontSize: function () {
                       return 11;
                     },
                   },

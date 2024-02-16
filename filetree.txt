@@ -1,22 +1,293 @@
 .
+├── Production
 ├── README.md
 ├── filetree.txt
 ├── forge.config.js
+├── generate-asar-unpack.js
 ├── index.html
+├── out
+│   ├── make
+│   │   └── zip
+│   │       └── darwin
+│   │           └── arm64
+│   │               └── probillify-darwin-arm64-1.0.0.zip
+│   └── probillify-darwin-arm64
+│       ├── LICENSE
+│       ├── LICENSES.chromium.html
+│       ├── probillify.app
+│       │   └── Contents
+│       │       ├── Frameworks
+│       │       │   ├── Electron Framework.framework
+│       │       │   │   ├── Electron Framework -> Versions/Current/Electron Framework
+│       │       │   │   ├── Helpers -> Versions/Current/Helpers
+│       │       │   │   ├── Libraries -> Versions/Current/Libraries
+│       │       │   │   ├── Resources -> Versions/Current/Resources
+│       │       │   │   └── Versions
+│       │       │   │       ├── A
+│       │       │   │       │   ├── Electron Framework
+│       │       │   │       │   ├── Helpers
+│       │       │   │       │   │   └── chrome_crashpad_handler
+│       │       │   │       │   ├── Libraries
+│       │       │   │       │   │   ├── libEGL.dylib
+│       │       │   │       │   │   ├── libGLESv2.dylib
+│       │       │   │       │   │   ├── libffmpeg.dylib
+│       │       │   │       │   │   ├── libvk_swiftshader.dylib
+│       │       │   │       │   │   └── vk_swiftshader_icd.json
+│       │       │   │       │   └── Resources
+│       │       │   │       │       ├── Info.plist
+│       │       │   │       │       ├── MainMenu.nib
+│       │       │   │       │       ├── af.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── am.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── ar.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── bg.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── bn.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── ca.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── chrome_100_percent.pak
+│       │       │   │       │       ├── chrome_200_percent.pak
+│       │       │   │       │       ├── cs.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── da.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── de.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── el.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── en.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── en_GB.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── es.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── es_419.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── et.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── fa.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── fi.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── fil.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── fr.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── gu.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── he.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── hi.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── hr.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── hu.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── icudtl.dat
+│       │       │   │       │       ├── id.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── it.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── ja.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── kn.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── ko.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── lt.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── lv.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── ml.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── mr.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── ms.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── nb.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── nl.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── pl.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── pt_BR.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── pt_PT.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── resources.pak
+│       │       │   │       │       ├── ro.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── ru.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── sk.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── sl.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── sr.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── sv.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── sw.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── ta.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── te.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── th.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── tr.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── uk.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── ur.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── v8_context_snapshot.arm64.bin
+│       │       │   │       │       ├── vi.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       ├── zh_CN.lproj
+│       │       │   │       │       │   └── locale.pak
+│       │       │   │       │       └── zh_TW.lproj
+│       │       │   │       │           └── locale.pak
+│       │       │   │       └── Current -> A
+│       │       │   ├── Mantle.framework
+│       │       │   │   ├── Mantle -> Versions/Current/Mantle
+│       │       │   │   ├── Resources -> Versions/Current/Resources
+│       │       │   │   └── Versions
+│       │       │   │       ├── A
+│       │       │   │       │   ├── Mantle
+│       │       │   │       │   └── Resources
+│       │       │   │       │       └── Info.plist
+│       │       │   │       └── Current -> A
+│       │       │   ├── ReactiveObjC.framework
+│       │       │   │   ├── ReactiveObjC -> Versions/Current/ReactiveObjC
+│       │       │   │   ├── Resources -> Versions/Current/Resources
+│       │       │   │   └── Versions
+│       │       │   │       ├── A
+│       │       │   │       │   ├── ReactiveObjC
+│       │       │   │       │   └── Resources
+│       │       │   │       │       └── Info.plist
+│       │       │   │       └── Current -> A
+│       │       │   ├── Squirrel.framework
+│       │       │   │   ├── Resources -> Versions/Current/Resources
+│       │       │   │   ├── Squirrel -> Versions/Current/Squirrel
+│       │       │   │   └── Versions
+│       │       │   │       ├── A
+│       │       │   │       │   ├── Resources
+│       │       │   │       │   │   ├── Info.plist
+│       │       │   │       │   │   └── ShipIt
+│       │       │   │       │   └── Squirrel
+│       │       │   │       └── Current -> A
+│       │       │   ├── probillify Helper (GPU).app
+│       │       │   │   └── Contents
+│       │       │   │       ├── Info.plist
+│       │       │   │       ├── MacOS
+│       │       │   │       │   └── probillify Helper (GPU)
+│       │       │   │       └── PkgInfo
+│       │       │   ├── probillify Helper (Plugin).app
+│       │       │   │   └── Contents
+│       │       │   │       ├── Info.plist
+│       │       │   │       ├── MacOS
+│       │       │   │       │   └── probillify Helper (Plugin)
+│       │       │   │       └── PkgInfo
+│       │       │   ├── probillify Helper (Renderer).app
+│       │       │   │   └── Contents
+│       │       │   │       ├── Info.plist
+│       │       │   │       ├── MacOS
+│       │       │   │       │   └── probillify Helper (Renderer)
+│       │       │   │       └── PkgInfo
+│       │       │   └── probillify Helper.app
+│       │       │       └── Contents
+│       │       │           ├── Info.plist
+│       │       │           ├── MacOS
+│       │       │           │   └── probillify Helper
+│       │       │           └── PkgInfo
+│       │       ├── Info.plist
+│       │       ├── MacOS
+│       │       │   └── probillify
+│       │       ├── PkgInfo
+│       │       └── Resources
+│       │           ├── af.lproj
+│       │           ├── am.lproj
+│       │           ├── app.asar
+│       │           ├── app.asar.unpacked
+│       │           ├── ar.lproj
+│       │           ├── bg.lproj
+│       │           ├── bn.lproj
+│       │           ├── ca.lproj
+│       │           ├── cs.lproj
+│       │           ├── da.lproj
+│       │           ├── de.lproj
+│       │           ├── el.lproj
+│       │           ├── electron.icns
+│       │           ├── en.lproj
+│       │           ├── en_GB.lproj
+│       │           ├── es.lproj
+│       │           ├── es_419.lproj
+│       │           ├── et.lproj
+│       │           ├── fa.lproj
+│       │           ├── fi.lproj
+│       │           ├── fil.lproj
+│       │           ├── fr.lproj
+│       │           ├── gu.lproj
+│       │           ├── he.lproj
+│       │           ├── hi.lproj
+│       │           ├── hr.lproj
+│       │           ├── hu.lproj
+│       │           ├── id.lproj
+│       │           ├── it.lproj
+│       │           ├── ja.lproj
+│       │           ├── kn.lproj
+│       │           ├── ko.lproj
+│       │           ├── lt.lproj
+│       │           ├── lv.lproj
+│       │           ├── ml.lproj
+│       │           ├── mr.lproj
+│       │           ├── ms.lproj
+│       │           ├── nb.lproj
+│       │           ├── nl.lproj
+│       │           ├── pl.lproj
+│       │           ├── pt_BR.lproj
+│       │           ├── pt_PT.lproj
+│       │           ├── ro.lproj
+│       │           ├── ru.lproj
+│       │           ├── sk.lproj
+│       │           ├── sl.lproj
+│       │           ├── sr.lproj
+│       │           ├── sv.lproj
+│       │           ├── sw.lproj
+│       │           ├── ta.lproj
+│       │           ├── te.lproj
+│       │           ├── th.lproj
+│       │           ├── tr.lproj
+│       │           ├── uk.lproj
+│       │           ├── ur.lproj
+│       │           ├── vi.lproj
+│       │           ├── zh_CN.lproj
+│       │           └── zh_TW.lproj
+│       └── version
+├── package-lock.json
 ├── package.json
-├── pnpm-lock.yaml
-└── src
-    ├── main.js
-    ├── scripts
-    │   ├── preload.js
-    │   └── renderer.js
-    ├── tests
-    │   └── main.spec.js
-    └── utils
-        ├── convertDuration.js
-        ├── invoiceDetails.js
-        ├── lineItems.js
-        ├── payee.js
-        └── reimbursements.js
+├── probillify@1.0.0
+├── src
+│   ├── main.js
+│   ├── reimbursements.json
+│   ├── scripts
+│   │   ├── preload.js
+│   │   ├── reactiveDisplay.js
+│   │   └── renderer.js
+│   ├── tests
+│   │   └── main.spec.js
+│   ├── unitPrices.json
+│   └── utils
+│       ├── convertDuration.js
+│       ├── invoiceDetails.js
+│       ├── lineItems.js
+│       ├── payee.js
+│       └── reimbursements.js
+├── styles.css
+└── yarn-error.log
 
-5 directories, 15 files
+168 directories, 123 files

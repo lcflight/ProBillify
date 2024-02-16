@@ -1,6 +1,6 @@
 module.exports = {
   name: 'Luke Arthur',
-  address: '123 Main St, Anytown, USA',
+  address: '74 Rocky Ct Apt.A, Bowling Green, Kentucky 42101',
   email: 'lcarthur747@gmail.com',
-  phone: '123-456-7890',
+  phone: '269-362-4046',
 };
